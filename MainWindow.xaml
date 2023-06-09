@@ -1,13 +1,14 @@
 ﻿<mah:MetroWindow x:Class="DovizKuru.MainWindow"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:viewmodels="clr-namespace:DovizKuru.viewmodels"
-                 xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
                  xmlns:converters="clr-namespace:DovizKuru.converters"
+                 xmlns:viewmodels="clr-namespace:DovizKuru.viewmodels"
+                 xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
                  WindowStyle="ToolWindow"
                  ResizeMode="NoResize"
                  d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
@@ -23,7 +24,10 @@
         </behaviors:EventTrigger>
     </behaviors:Interaction.Triggers>
 
-    <Grid>
+    <DockPanel LastChildFill="True">
+
+        <wv2:WebView2 x:Name="webView" DockPanel.Dock="Top" Source="https://canlidoviz.com/" Width="0" Height="0" NavigationCompleted="webView_NavigationCompleted"/>
+
         <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding ExchangeRates}">
                 <ItemsControl.ItemsPanel>
@@ -46,11 +50,10 @@
                                     <TextBlock Text="{Binding Path=OldBuying, StringFormat=Önceki Değer: {0:N4}}" />
                                 </TextBlock.ToolTip>
                             </TextBlock>
-
                         </DockPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-    </Grid>
+    </DockPanel>
 </mah:MetroWindow>

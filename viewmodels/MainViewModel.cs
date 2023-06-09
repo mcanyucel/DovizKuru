@@ -15,6 +15,7 @@ namespace DovizKuru.viewmodels
     {
         public IAsyncRelayCommand LoadPreferencesCommand { get => m_LoadPreferencesCommand; }
         public bool IsIdle { get => m_IsIdle; private set => SetProperty(ref m_IsIdle, value); }
+        public bool ShouldQueryRates { get => m_ShouldQueryRates; private set => SetProperty(ref m_ShouldQueryRates, value); }
         public ObservableCollection<ExchangeRate> ExchangeRates { get => m_ExchangeRates; private set => SetProperty(ref m_ExchangeRates, value); }
         public DateTime LastUpdate { get => m_LastUpdate; private set => SetProperty(ref m_LastUpdate, value); }
         public MainViewModel(IWindowService windowService, IWebService webService, IPreferenceService preferenceService)
@@ -25,31 +26,28 @@ namespace DovizKuru.viewmodels
 
             m_LoadPreferencesCommand = new AsyncRelayCommand(LoadPreferences, LoadPreferencesCanExecute);
 
-            m_UpdateTimer = new(UpdateExchangeRates, null, Timeout.Infinite, Timeout.Infinite);
+            m_UpdateTimer = new(QueryExchangeRates, null, Timeout.Infinite, Timeout.Infinite);
         }
 
 
         private async Task LoadPreferences()
         {
             IsIdle = false;
-
             ExchangeRates = new(await m_PreferenceService.LoadRateList());
             m_ExchangeRateDictionary = ExchangeRates.GroupBy(x => x.SourceUrl).ToDictionary(x => x.Key, x => x.ToList());
-
-            m_UpdateTimer.Change(0, 15000);
+            IsIdle = true;
         }
 
-        private void UpdateExchangeRates(object? state = null)
+        private void QueryExchangeRates(object? state = null) => ShouldQueryRates = true;
+
+        public void OnExchangeRatesQueried(string sourceHTML)
         {
-            Task.Run(async () =>
-            {
-                IsIdle = false;
-                await m_WebService.UpdateRates(m_ExchangeRateDictionary);
-                LastUpdate = DateTime.Now;
-                IsIdle = true;
-            });
+            ShouldQueryRates = false;
+            m_WebService.UpdateRates(sourceHTML, m_ExchangeRateDictionary);
+            LastUpdate = DateTime.Now;
         }
 
+        public void SourcePageLoaded() => m_UpdateTimer.Change(5000, c_UpdateTimerPeriod);
 
         #region Command States
         private bool LoadPreferencesCanExecute() => m_IsIdle;
@@ -57,6 +55,7 @@ namespace DovizKuru.viewmodels
 
         #region Fields
         private bool m_IsIdle = true;
+        private bool m_ShouldQueryRates = false;
         private DateTime m_LastUpdate;
 
         private readonly IWindowService m_WindowService;
@@ -69,6 +68,7 @@ namespace DovizKuru.viewmodels
         private readonly IAsyncRelayCommand m_LoadPreferencesCommand;
 
         private readonly Timer m_UpdateTimer;
+        private const int c_UpdateTimerPeriod = 15000; // 15 seconds
         #endregion
     }
 }

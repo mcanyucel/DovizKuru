@@ -7,5 +7,7 @@ namespace DovizKuru.services
     internal interface IWebService
     {
         Task UpdateRates(Dictionary<string, List<ExchangeRate>> exchangeRateDictionary);
+
+        Task UpdateRates(string sourceHTML, Dictionary<string, List<ExchangeRate>> exchangeRateDictionary);
     }
 }

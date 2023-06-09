@@ -53,6 +53,42 @@ namespace DovizKuru.services.implementations
             }
         }
 
+        public async Task UpdateRates(string sourceHTML, Dictionary<string, List<ExchangeRate>> exchangeRateDictionary)
+        {
+            await Task.Run(() =>
+            {
+                foreach (string url in exchangeRateDictionary.Keys)
+                {
+                    try
+                    {
+
+                        var htmlDoc = new HtmlDocument();
+                        htmlDoc.LoadHtml(sourceHTML);
+                        foreach (var exchangeRate in exchangeRateDictionary[url])
+                        {
+                            try
+                            {
+                                var valueString = htmlDoc.DocumentNode.SelectSingleNode(exchangeRate.XPath)?.InnerText;
+                                if (double.TryParse(valueString, out double valueDouble))
+                                    exchangeRate.Update(valueDouble);
+                                else
+                                    exchangeRate.Update(-1d);
+                            }
+                            catch (Exception ex)
+                            {
+                                m_LogService.LogError($"Error while updating rate {exchangeRate.Name}: {ex.Message}");
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        m_LogService.LogError($"Error while downloading {url}: {ex.Message}");
+                    }
+
+                }
+            });
+        }
+
         #region Fields
         private readonly ILogService m_LogService;
 
