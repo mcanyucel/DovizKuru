@@ -26,9 +26,11 @@ namespace DovizKuru.viewmodels
         {
             IsIdle = false;
 
-             ExchangeRates = new (await m_PreferenceService.LoadRateList());
+            ExchangeRates = new(await m_PreferenceService.LoadRateList());
 
             IsIdle = true;
+
+            await m_PreferenceService.SaveRateList(ExchangeRates);
         }
 
 
@@ -38,7 +40,7 @@ namespace DovizKuru.viewmodels
 
         #region Fields
         private bool m_IsIdle = true;
-        
+
 
         private readonly IWindowService m_WindowService;
         private readonly IWebService m_WebService;

@@ -17,32 +17,26 @@ namespace DovizKuru.services.implementations
         public async Task<IEnumerable<ExchangeRate>> LoadRateList()
         {
             ObservableCollection<ExchangeRate> rates;
-            //string dataText = string.Empty;
-            //await m_PreferenceFileSemaphore.WaitAsync();
-            //try
-            //{
-            //    dataText = await File.ReadAllTextAsync(c_PreferenceFileName);
-            //}
-            //catch (Exception e)
-            //{
-            //    m_LogService.LogError($"Error while loading preference file: {e.Message}");
-            //}
-            //m_PreferenceFileSemaphore.Release();
-            //try
-            //{
-            //    rates = await Task.Run(() => Newtonsoft.Json.JsonConvert.DeserializeObject<ObservableCollection<ExchangeRate>>(dataText) ?? new());
-            //}
-            //catch (Exception e)
-            //{
-            //    m_LogService.LogError($"Error while deserializing preference file: {e.Message}");
-            //    rates = new();
-            //}
-            rates = new()
+            string dataText = string.Empty;
+            await m_PreferenceFileSemaphore.WaitAsync();
+            try
             {
-                new ExchangeRate("Dolar", "USD"),
-                new ExchangeRate("Euro", "EUR"),
-                new ExchangeRate("Altın", "XAU")
-            };
+                dataText = await File.ReadAllTextAsync(c_PreferenceFileName);
+            }
+            catch (Exception e)
+            {
+                m_LogService.LogError($"Error while loading preference file: {e.Message}");
+            }
+            m_PreferenceFileSemaphore.Release();
+            try
+            {
+                rates = await Task.Run(() => Newtonsoft.Json.JsonConvert.DeserializeObject<ObservableCollection<ExchangeRate>>(dataText) ?? new());
+            }
+            catch (Exception e)
+            {
+                m_LogService.LogError($"Error while deserializing preference file: {e.Message}");
+                rates = new();
+            }
             return rates;
         }
 
