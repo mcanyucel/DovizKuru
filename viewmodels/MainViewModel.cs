@@ -2,7 +2,9 @@
 using CommunityToolkit.Mvvm.Input;
 using DovizKuru.models;
 using DovizKuru.services;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DovizKuru.viewmodels
@@ -27,10 +29,21 @@ namespace DovizKuru.viewmodels
             IsIdle = false;
 
             ExchangeRates = new(await m_PreferenceService.LoadRateList());
+            m_ExchangeRateDictionary = ExchangeRates.GroupBy(x => x.SourceUrl).ToDictionary(x => x.Key, x => x.ToList());
+
+
+            await UpdateExchangeRates();
 
             IsIdle = true;
 
-            await m_PreferenceService.SaveRateList(ExchangeRates);
+            
+        }
+
+        private async Task UpdateExchangeRates()
+        {
+            IsIdle = false;
+            await m_WebService.UpdateRates(m_ExchangeRateDictionary);
+            IsIdle = true;
         }
 
 
@@ -47,6 +60,7 @@ namespace DovizKuru.viewmodels
         private readonly IPreferenceService m_PreferenceService;
 
         private ObservableCollection<ExchangeRate> m_ExchangeRates = new();
+        private Dictionary<string, List<ExchangeRate>> m_ExchangeRateDictionary = new();
 
 
         private readonly IAsyncRelayCommand m_LoadPreferencesCommand;

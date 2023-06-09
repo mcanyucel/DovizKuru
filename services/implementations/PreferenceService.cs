@@ -57,7 +57,7 @@ namespace DovizKuru.services.implementations
 
 
         #region Fields
-        private const string c_PreferenceFileName = "preferences.json";
+        private const string c_PreferenceFileName = "assets/preferences.json";
         private readonly SemaphoreSlim m_PreferenceFileSemaphore = new(1, 1);
         private readonly ILogService m_LogService;
         #endregion
