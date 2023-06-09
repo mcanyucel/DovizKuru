@@ -6,7 +6,6 @@
     "OldBuying": 0.0,
     "ChangeRate": 0.0,
     "ChangePercentage": 0.0,
-    "SourceUrl": "https://canlidoviz.com/",
     "XPath": "/html/body/main/div/section[2]/div/div[1]/div[2]/div[1]/div/div[1]/div/div[2]/div[2]/span[2]"
   },
   {
@@ -16,7 +15,6 @@
     "OldBuying": 0.0,
     "ChangeRate": 0.0,
     "ChangePercentage": 0.0,
-    "SourceUrl": "https://canlidoviz.com/",
     "XPath": "/html/body/main/div/section[2]/div/div[1]/div[2]/div[1]/div/div[2]/div/div[2]/div[2]/span[2]"
   },
   {
@@ -26,7 +24,6 @@
     "OldBuying": 0.0,
     "ChangeRate": 0.0,
     "ChangePercentage": 0.0,
-    "SourceUrl": "https://canlidoviz.com/",
     "XPath": "/html/body/main/div/section[2]/div/div[1]/div[4]/div[2]/table/tbody/tr[2]/td[4]"
   }
 ]

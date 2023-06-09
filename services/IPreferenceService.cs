@@ -8,5 +8,8 @@ namespace DovizKuru.services
     {
         Task<IEnumerable<ExchangeRate>> LoadRateList();
         Task SaveRateList(IEnumerable<ExchangeRate> rates);
+
+        Task<IEnumerable<Alarm>> LoadAlarms();
+        Task SaveAlarms(IEnumerable<Alarm> alarms);
     }
 }

@@ -8,6 +8,6 @@ namespace DovizKuru.services
     {
         Task UpdateRates(Dictionary<string, List<ExchangeRate>> exchangeRateDictionary);
 
-        Task UpdateRates(string sourceHTML, Dictionary<string, List<ExchangeRate>> exchangeRateDictionary);
+        Task UpdateRates(string sourceHTML, IEnumerable<ExchangeRate> exchangeRates);
     }
 }

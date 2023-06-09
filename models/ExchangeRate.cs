@@ -10,15 +10,13 @@ namespace DovizKuru.models
         public double OldBuying { get => m_OldBuying; private set => SetProperty(ref m_OldBuying, value); }
         public double ChangeRate { get => m_ChangeRate; private set => SetProperty(ref m_ChangeRate, value); }
         public double ChangePercentage { get => m_ChangePercentage; private set => SetProperty(ref m_ChangePercentage, value); }
-        public string SourceUrl { get => m_SourceUrl; }
         public string XPath { get => m_XPath; }
 
-        public ExchangeRate(string name, string code, string sourceUrl, string xPath)
+        public ExchangeRate(string name, string code, string xPath)
         {
             m_Name = name;
             m_Code = code;
             m_XPath = xPath;
-            m_SourceUrl = sourceUrl;
         }
 
         public void Update(double newBuying)
@@ -32,7 +30,6 @@ namespace DovizKuru.models
         #region Fields
         private readonly string m_Code;
         private readonly string m_Name;
-        private readonly string m_SourceUrl;
         private readonly string m_XPath;
         private double m_NewBuying;
         private double m_OldBuying;

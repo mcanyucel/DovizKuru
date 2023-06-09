@@ -53,38 +53,26 @@ namespace DovizKuru.services.implementations
             }
         }
 
-        public async Task UpdateRates(string sourceHTML, Dictionary<string, List<ExchangeRate>> exchangeRateDictionary)
+        public async Task UpdateRates(string sourceHTML, IEnumerable<ExchangeRate> exchangeRates)
         {
             await Task.Run(() =>
             {
-                foreach (string url in exchangeRateDictionary.Keys)
+                var htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(sourceHTML);
+                foreach (var exchangeRate in exchangeRates)
                 {
                     try
                     {
-
-                        var htmlDoc = new HtmlDocument();
-                        htmlDoc.LoadHtml(sourceHTML);
-                        foreach (var exchangeRate in exchangeRateDictionary[url])
-                        {
-                            try
-                            {
-                                var valueString = htmlDoc.DocumentNode.SelectSingleNode(exchangeRate.XPath)?.InnerText;
-                                if (double.TryParse(valueString, out double valueDouble))
-                                    exchangeRate.Update(valueDouble);
-                                else
-                                    exchangeRate.Update(-1d);
-                            }
-                            catch (Exception ex)
-                            {
-                                m_LogService.LogError($"Error while updating rate {exchangeRate.Name}: {ex.Message}");
-                            }
-                        }
+                        var valueString = htmlDoc.DocumentNode.SelectSingleNode(exchangeRate.XPath)?.InnerText;
+                        if (double.TryParse(valueString, out double valueDouble))
+                            exchangeRate.Update(valueDouble);
+                        else
+                            exchangeRate.Update(-1d);
                     }
                     catch (Exception ex)
                     {
-                        m_LogService.LogError($"Error while downloading {url}: {ex.Message}");
+                        m_LogService.LogError($"Error while updating rate {exchangeRate.Name}: {ex.Message}");
                     }
-
                 }
             });
         }
