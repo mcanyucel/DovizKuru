@@ -6,9 +6,17 @@
                  xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:viewmodels="clr-namespace:DovizKuru.viewmodels"
+                 xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                 xmlns:converters="clr-namespace:DovizKuru.converters"
+                 WindowStyle="ToolWindow"
+                 ResizeMode="NoResize"
                  d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
-        mc:Ignorable="d"
-        Title="DOVIZ KURU" Height="450" Width="800">
+        mc:Ignorable="d" SizeToContent="WidthAndHeight"
+        Title="{Binding LastUpdate, StringFormat=SON GÜNCELLEME:{0}}">
+    <mah:MetroWindow.Resources>
+        <converters:ChangeColorConverter x:Key="ChangeColorConverter" />
+        <converters:ChangeIconConverter x:Key="ChangeIconConverter" />
+    </mah:MetroWindow.Resources>
     <behaviors:Interaction.Triggers>
         <behaviors:EventTrigger EventName="Loaded">
             <behaviors:InvokeCommandAction Command="{Binding LoadPreferencesCommand}" />
@@ -25,9 +33,20 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <DockPanel LastChildFill="True">
-                            <TextBlock Text="{Binding Name, Mode=OneTime}" Margin="4" DockPanel.Dock="Left" />
-                            <TextBlock Text="{Binding NewBuying}" Margin="4" ToolTip="{Binding OldBuying, StringFormat=Bir Önceki Değer:{0:N4}}" />
+                        <DockPanel LastChildFill="True" x:Name="dock">
+                            <TextBlock Text="{Binding Name, Mode=OneTime}" Margin="4" DockPanel.Dock="Left" VerticalAlignment="Center" />
+                            <Line Y1="0" Y2="20" Stroke="Red" StrokeThickness="2" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="4,4,4,4" />
+                            <icons:PackIconMaterial Kind="{Binding ChangeRate, Converter={StaticResource ChangeIconConverter}}" Foreground="{Binding ChangeRate, Converter={StaticResource ChangeColorConverter}}" DockPanel.Dock="Right" Width="20" Height="20" Margin="4,4,8,4">
+                                <icons:PackIconMaterial.ToolTip>
+                                    <TextBlock Text="{Binding ChangePercentage, StringFormat=Değişim: %{0:N1}}" />
+                                </icons:PackIconMaterial.ToolTip>
+                            </icons:PackIconMaterial>
+                            <TextBlock Text="{Binding NewBuying}" Margin="4" VerticalAlignment="Center">
+                                <TextBlock.ToolTip>
+                                    <TextBlock Text="{Binding Path=OldBuying, StringFormat=Önceki Değer: {0:N4}}" />
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+
                         </DockPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

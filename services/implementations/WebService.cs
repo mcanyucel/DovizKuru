@@ -3,7 +3,6 @@ using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DovizKuru.services.implementations
@@ -16,13 +15,13 @@ namespace DovizKuru.services.implementations
 
             m_HttpClient = new HttpClient(new HttpClientHandler
             {
-                AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate
+                AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate,
+                UseCookies = false
             });
         }
 
         public async Task UpdateRates(Dictionary<string, List<ExchangeRate>> exchangeRateDictionary)
         {
-            
             foreach (string url in exchangeRateDictionary.Keys)
             {
                 try
