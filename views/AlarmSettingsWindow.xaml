@@ -1,0 +1,31 @@
+﻿<mah:MetroWindow x:Class="DovizKuru.views.AlarmSettingsWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:viewmodels="clr-namespace:DovizKuru.viewmodels"
+                 d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+                 mc:Ignorable="d" Width="256" SizeToContent="Height"
+        Title="Alarmlar">
+    <DockPanel LastChildFill="True">
+        <TextBlock Text="Alarm Listesi" FontSize="20" FontWeight="Bold" Margin="10" DockPanel.Dock="Left" VerticalAlignment="Center" />
+        <Button Style="{StaticResource MahApps.Styles.Button.Circle}" Margin="0,5,5,0" Width="22" Height="22" DockPanel.Dock="Right" Command="{Binding AddAlarmCommand}" >
+            <icons:PackIconMaterial Kind="PlusCircle" Width="20" Height="20" Foreground="DarkGray" />
+        </Button>
+        <ItemsControl ItemsSource="{Binding AlarmList}" DockPanel.Dock="Bottom">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Code}" Margin="10" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Value}" Margin="10" VerticalAlignment="Center" />
+                        <Button Style="{StaticResource MahApps.Styles.Button.Circle}" Margin="0,5,5,0" Width="22" Height="22" DockPanel.Dock="Right" Command="{Binding DeleteAlarmCommand}" CommandParameter="{Binding Id}">
+                            <icons:PackIconMaterial Kind="DeleteCircle" Width="20" Height="20" Foreground="DarkGray" />
+                        </Button>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </DockPanel>
+</mah:MetroWindow>

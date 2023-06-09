@@ -20,7 +20,7 @@ namespace DovizKuru
         private static IServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection();
-            services.AddTransient<MainViewModel>();
+            services.AddSingleton<MainViewModel>();
             services.AddSingleton<IWindowService, WindowService>();
             services.AddSingleton<ILogService, LogService>();
             services.AddSingleton<IWebService, WebService>();

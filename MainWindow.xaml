@@ -14,6 +14,13 @@
                  d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
         mc:Ignorable="d" SizeToContent="WidthAndHeight"
         Title="{Binding LastUpdate, StringFormat=SON GÜNCELLEME:{0}}">
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+            <Button ToolTip="Alarmlar" Command="{Binding ShowAlarmWindowCommand}">
+                <icons:PackIconMaterial Kind="Alarm" />
+            </Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
     <mah:MetroWindow.Resources>
         <converters:ChangeColorConverter x:Key="ChangeColorConverter" />
         <converters:ChangeIconConverter x:Key="ChangeIconConverter" />
