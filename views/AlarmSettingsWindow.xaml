@@ -49,14 +49,13 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Code}" Margin="8,4,2,4" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding AlarmOperator, Converter={StaticResource AlarmOperatorConverter}}" Margin="2,4,4,4" />
-
-                        <TextBlock Text="{Binding Value}" Margin="2,4,4,4" VerticalAlignment="Center" />
-                        <mah:ToggleSwitch  IsOn="{Binding IsEnabled}" Margin="4" />
-                        <Button Style="{StaticResource MahApps.Styles.Button.Circle}" Margin="4,4,8,8" Width="22" Height="22" DockPanel.Dock="Right" Command="{Binding DeleteAlarmCommand}" CommandParameter="{Binding Id}">
+                        <Button Style="{StaticResource MahApps.Styles.Button.Circle}" Margin="8,4,0,4" Width="22" Height="22" DockPanel.Dock="Right" Command="{Binding Path=DataContext.DeleteAlarmCommand, RelativeSource={RelativeSource AncestorType=mah:MetroWindow}}" CommandParameter="{Binding Id}" VerticalAlignment="Center" ToolTip="Sil">
                             <icons:PackIconMaterial Kind="DeleteCircle" Width="20" Height="20" Foreground="DarkGray" />
                         </Button>
+                        <TextBlock Text="{Binding Code}" Margin="8,4,2,4" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding AlarmOperator, Converter={StaticResource AlarmOperatorConverter}}" Margin="2,4,4,4" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Value, StringFormat={}{0:N4}}" Margin="2,4,4,4" VerticalAlignment="Center" />
+                        <mah:ToggleSwitch  IsOn="{Binding IsEnabled}" Margin="4,4,0,4" />
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

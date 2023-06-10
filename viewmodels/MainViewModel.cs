@@ -20,7 +20,7 @@ namespace DovizKuru.viewmodels
         public IAsyncRelayCommand LoadPreferencesCommand { get => m_LoadPreferencesCommand; }
         public IRelayCommand ShowAlarmWindowCommand { get => m_ShowAlarmWindowCommand; }
         public IRelayCommand AddAlarmCommand { get => m_AddAlarmCommand; }
-        public IRelayCommand<string> RemoveAlarmCommand { get => m_RemoveAlarmCommand; }
+        public IRelayCommand<string> DeleteAlarmCommand { get => m_DeleteAlarmCommand; }
         public bool IsIdle { get => m_IsIdle; private set => SetProperty(ref m_IsIdle, value); }
         public bool ShouldQueryRates { get => m_ShouldQueryRates; private set => SetProperty(ref m_ShouldQueryRates, value); }
         public ObservableCollection<ExchangeRate> ExchangeRates { get => m_ExchangeRates; private set => SetProperty(ref m_ExchangeRates, value); }
@@ -37,7 +37,7 @@ namespace DovizKuru.viewmodels
             m_LoadPreferencesCommand = new AsyncRelayCommand(LoadPreferences, LoadPreferencesCanExecute);
             m_ShowAlarmWindowCommand = new RelayCommand(ShowAlarmWindow);
             m_AddAlarmCommand = new RelayCommand(AddAlarm);
-            m_RemoveAlarmCommand = new RelayCommand<string?>(RemoveAlarm);
+            m_DeleteAlarmCommand = new RelayCommand<string?>(DeleteAlarm);
 
             m_UpdateTimer = new(QueryExchangeRates, null, Timeout.Infinite, Timeout.Infinite);
         }
@@ -59,7 +59,7 @@ namespace DovizKuru.viewmodels
                 AlarmList.Add(new Alarm(SelectedAlarmExchange.Code, SelectedAlarmValue, SelectedAlarmOperator));
         }
 
-        private void RemoveAlarm(string? alarmId) => AlarmList.Remove(AlarmList.FirstOrDefault(alarm => alarm.Id == alarmId, new()));
+        private void DeleteAlarm(string? alarmId) => AlarmList.Remove(AlarmList.FirstOrDefault(alarm => alarm.Id == alarmId, new()));
 
         private void ShowAlarmWindow() => m_WindowService.ShowAlarmSettingsWindow();
 
@@ -97,7 +97,7 @@ namespace DovizKuru.viewmodels
         private readonly IAsyncRelayCommand m_LoadPreferencesCommand;
         private readonly IRelayCommand m_ShowAlarmWindowCommand;
         private readonly IRelayCommand m_AddAlarmCommand;
-        private readonly IRelayCommand<string> m_RemoveAlarmCommand;
+        private readonly IRelayCommand<string> m_DeleteAlarmCommand;
 
         private readonly Timer m_UpdateTimer;
         private const int c_UpdateTimerPeriod = 15000; // 15 seconds
