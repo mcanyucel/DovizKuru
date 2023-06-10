@@ -11,7 +11,7 @@
                  xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
                  WindowStyle="ToolWindow"
                  ResizeMode="NoResize"
-				 topmost="True"
+				 Topmost="True"
                  d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
         mc:Ignorable="d" SizeToContent="WidthAndHeight"
         Title="{Binding LastUpdate, StringFormat=SON GÜNCELLEME:{0}}">
