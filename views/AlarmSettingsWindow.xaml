@@ -1,31 +1,67 @@
 ﻿<mah:MetroWindow x:Class="DovizKuru.views.AlarmSettingsWindow"
+                 WindowStyle="ToolWindow"
+                 ResizeMode="NoResize"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:converters="clr-namespace:DovizKuru.converters"
                  xmlns:viewmodels="clr-namespace:DovizKuru.viewmodels"
                  d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
-                 mc:Ignorable="d" Width="256" SizeToContent="Height"
+                 mc:Ignorable="d" SizeToContent="WidthAndHeight"
         Title="Alarmlar">
-    <DockPanel LastChildFill="True">
-        <TextBlock Text="Alarm Listesi" FontSize="20" FontWeight="Bold" Margin="10" DockPanel.Dock="Left" VerticalAlignment="Center" />
-        <Button Style="{StaticResource MahApps.Styles.Button.Circle}" Margin="0,5,5,0" Width="22" Height="22" DockPanel.Dock="Right" Command="{Binding AddAlarmCommand}" >
-            <icons:PackIconMaterial Kind="PlusCircle" Width="20" Height="20" Foreground="DarkGray" />
-        </Button>
-        <ItemsControl ItemsSource="{Binding AlarmList}" DockPanel.Dock="Bottom">
+    <mah:MetroWindow.Resources>
+        <converters:AlarmOperatorConverter x:Key="AlarmOperatorConverter" />
+    </mah:MetroWindow.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="Alarm Ekle" FontWeight="Bold" Margin="8,8,8,0" DockPanel.Dock="Left" VerticalAlignment="Center" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
+            <ComboBox ItemsSource="{Binding ExchangeRates}" SelectedItem="{Binding SelectedAlarmExchange}" Margin="4,8,4,8">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Code}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <ComboBox ItemsSource="{Binding AlarmOperators}" SelectedItem="{Binding SelectedAlarmOperator}" Margin="8">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource AlarmOperatorConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <mah:NumericUpDown Value="{Binding SelectedAlarmValue}" Minimum="0.5" Interval="0.5" NumericInputMode="All" mah:ButtonsAlignment="Opposite" Margin="8" />
+            <Button Style="{StaticResource MahApps.Styles.Button.Circle}" Margin="0,0,8,0" Width="22" Height="22" Command="{Binding AddAlarmCommand}" ToolTip="Ekle" >
+                <icons:PackIconMaterial Kind="PlusCircle" Width="20" Height="20" Foreground="DarkGray" />
+            </Button>
+        </StackPanel>
+
+        <TextBlock Grid.Row="2" Text="Alarmlar" FontWeight="Bold" Margin="8,8,8,4" DockPanel.Dock="Left" VerticalAlignment="Center" />
+        <ItemsControl Grid.Row="3" ItemsSource="{Binding AlarmList}" DockPanel.Dock="Bottom">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Code}" Margin="10" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding Value}" Margin="10" VerticalAlignment="Center" />
-                        <Button Style="{StaticResource MahApps.Styles.Button.Circle}" Margin="0,5,5,0" Width="22" Height="22" DockPanel.Dock="Right" Command="{Binding DeleteAlarmCommand}" CommandParameter="{Binding Id}">
+                        <TextBlock Text="{Binding Code}" Margin="8,4,2,4" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding AlarmOperator, Converter={StaticResource AlarmOperatorConverter}}" Margin="2,4,4,4" />
+
+                        <TextBlock Text="{Binding Value}" Margin="2,4,4,4" VerticalAlignment="Center" />
+                        <mah:ToggleSwitch  IsOn="{Binding IsEnabled}" Margin="4" />
+                        <Button Style="{StaticResource MahApps.Styles.Button.Circle}" Margin="4,4,8,8" Width="22" Height="22" DockPanel.Dock="Right" Command="{Binding DeleteAlarmCommand}" CommandParameter="{Binding Id}">
                             <icons:PackIconMaterial Kind="DeleteCircle" Width="20" Height="20" Foreground="DarkGray" />
                         </Button>
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-    </DockPanel>
+
+    </Grid>
+
 </mah:MetroWindow>
