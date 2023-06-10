@@ -36,7 +36,7 @@ namespace DovizKuru
             });
         }
 
-        private async void webView_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
+        private async void WebView_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
             await webView.EnsureCoreWebView2Async(null);
 

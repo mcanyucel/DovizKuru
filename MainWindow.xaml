@@ -33,7 +33,7 @@
 
     <DockPanel LastChildFill="True">
 
-        <wv2:WebView2 x:Name="webView" DockPanel.Dock="Top" Source="https://canlidoviz.com/" Width="0" Height="0" NavigationCompleted="webView_NavigationCompleted"/>
+        <wv2:WebView2 x:Name="webView" DockPanel.Dock="Top" Source="https://canlidoviz.com/" Width="0" Height="0" NavigationCompleted="WebView_NavigationCompleted"/>
 
         <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding ExchangeRates}">
