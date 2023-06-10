@@ -1,13 +1,18 @@
 ﻿using DovizKuru.views;
 using System;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace DovizKuru.services.implementations
 {
-    internal class WindowService : IWindowService
+    internal class WindowService : IWindowService, IDisposable
     {
         public void ShowAlarm(string title, string message)
         {
-            throw new NotImplementedException();
+            new ToastContentBuilder()
+                .AddArgument("conversationId", 9813)
+                .AddText(title)
+                .AddText(message)
+                .Show();
         }
 
         public void ShowAlarmSettingsWindow()
@@ -35,6 +40,11 @@ namespace DovizKuru.services.implementations
         public void ShowPreferenceWindow()
         {
             throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            ToastNotificationManagerCompat.Uninstall();
         }
 
         #region Fields

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Documents;
@@ -32,7 +33,7 @@ namespace DovizKuru.viewmodels
         {
             m_WebService = webService;
             m_PreferenceService = preferenceService;
-            m_WindowService = windowService;    
+            m_WindowService = windowService;
 
             m_LoadPreferencesCommand = new AsyncRelayCommand(LoadPreferences, LoadPreferencesCanExecute);
             m_ShowAlarmWindowCommand = new RelayCommand(ShowAlarmWindow);
@@ -74,7 +75,37 @@ namespace DovizKuru.viewmodels
 
         public void SourcePageLoaded() => m_UpdateTimer.Change(5000, c_UpdateTimerPeriod);
 
+        private async Task CheckAlarms()
+        {
+            StringBuilder sb = new();
+            await Task.Run(() =>
+            {
 
+                for (int i = 0; i < AlarmList.Count; i++)
+                {
+                    Alarm alarm = AlarmList[i];
+                    if (!alarm.IsEnabled) continue;
+                    ExchangeRate? rate = ExchangeRates.FirstOrDefault(rate => rate.Code == alarm.Code);
+                    if (rate == null) continue;
+
+                    if (alarm.AlarmOperator == AlarmOperator.GreaterThan && rate.NewBuying > alarm.Value)
+                    {
+                        sb.AppendLine($"{rate.Code} alış fiyatı {alarm.Value} TL değerinden büyük.");
+                        alarm.IsEnabled = false; // disable alarm after it is triggered
+                    }
+                    else if (alarm.AlarmOperator == AlarmOperator.LessThan && rate.NewBuying < alarm.Value)
+                    {
+                        sb.AppendLine($"{rate.Code} alış fiyatı {alarm.Value} TL değerinden küçük.");
+                        alarm.IsEnabled = false; // disable alarm after it is triggered
+                    }
+                }
+
+                if (sb.Length > 0)
+                    m_WindowService.ShowAlarm("Alarm", sb.ToString());
+
+            });
+
+        }
 
         #region Command States
         private bool LoadPreferencesCanExecute() => m_IsIdle;
