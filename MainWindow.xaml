@@ -9,8 +9,8 @@
                  xmlns:converters="clr-namespace:DovizKuru.converters"
                  xmlns:viewmodels="clr-namespace:DovizKuru.viewmodels"
                  xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-                 WindowStyle="ToolWindow"
-                 ResizeMode="NoResize"
+                 
+                 ResizeMode="CanMinimize"
 				 Topmost="{Binding AlwaysOnTop}"
                  d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
         mc:Ignorable="d" SizeToContent="WidthAndHeight"
@@ -41,6 +41,7 @@
     <mah:MetroWindow.Resources>
         <converters:ChangeColorConverter x:Key="ChangeColorConverter" />
         <converters:ChangeIconConverter x:Key="ChangeIconConverter" />
+        <converters:BooleanInverter x:Key="BooleanInverter" />
     </mah:MetroWindow.Resources>
     <behaviors:Interaction.Triggers>
         <behaviors:EventTrigger EventName="Loaded">
@@ -48,36 +49,37 @@
         </behaviors:EventTrigger>
     </behaviors:Interaction.Triggers>
 
-    <DockPanel LastChildFill="True">
-
-        <wv2:WebView2 x:Name="webView" DockPanel.Dock="Top" Source="https://canlidoviz.com/" Width="0" Height="0" NavigationCompleted="WebView_NavigationCompleted"/>
-
-        <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding ExchangeRates}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <DockPanel LastChildFill="True" x:Name="dock">
-                            <TextBlock Text="{Binding Name, Mode=OneTime}" Margin="4" DockPanel.Dock="Left" VerticalAlignment="Center" />
-                            <Line Y1="0" Y2="20" Stroke="Red" StrokeThickness="2" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="4,4,4,4" />
-                            <icons:PackIconMaterial Kind="{Binding ChangeRate, Converter={StaticResource ChangeIconConverter}}" Foreground="{Binding ChangeRate, Converter={StaticResource ChangeColorConverter}}" DockPanel.Dock="Right" Width="20" Height="20" Margin="4,4,8,4">
-                                <icons:PackIconMaterial.ToolTip>
-                                    <TextBlock Text="{Binding ChangePercentage, StringFormat=Değişim: %{0:N1}}" />
-                                </icons:PackIconMaterial.ToolTip>
-                            </icons:PackIconMaterial>
-                            <TextBlock Text="{Binding NewBuying}" Margin="4" VerticalAlignment="Center">
-                                <TextBlock.ToolTip>
-                                    <TextBlock Text="{Binding Path=OldBuying, StringFormat=Önceki Değer: {0:N4}}" />
-                                </TextBlock.ToolTip>
+    <Grid>
+        <mah:ProgressRing Height="16" Width="16" IsActive="{Binding IsSourcePageLoaded, Converter={StaticResource BooleanInverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <DockPanel LastChildFill="True" Visibility="{Binding IsSourcePageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <wv2:WebView2 x:Name="webView" DockPanel.Dock="Top" Source="https://canlidoviz.com/" Width="0" Height="0" NavigationCompleted="WebView_NavigationCompleted"/>
+            <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding ExchangeRates}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel LastChildFill="True" x:Name="dock">
+                                <TextBlock Text="{Binding Name, Mode=OneTime}" Margin="4" DockPanel.Dock="Left" VerticalAlignment="Center" />
+                                <Line Y1="0" Y2="20" Stroke="Red" StrokeThickness="2" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="4,4,4,4" />
+                                <icons:PackIconMaterial Kind="{Binding ChangeRate, Converter={StaticResource ChangeIconConverter}}" Foreground="{Binding ChangeRate, Converter={StaticResource ChangeColorConverter}}" DockPanel.Dock="Right" Width="20" Height="20" Margin="4,4,8,4">
+                                    <icons:PackIconMaterial.ToolTip>
+                                        <TextBlock Text="{Binding ChangePercentage, StringFormat=Değişim: %{0:N1}}" />
+                                    </icons:PackIconMaterial.ToolTip>
+                                </icons:PackIconMaterial>
+                                <TextBlock Text="{Binding NewBuying}" Margin="4" VerticalAlignment="Center">
+                                    <TextBlock.ToolTip>
+                                        <TextBlock Text="{Binding Path=OldBuying, StringFormat=Önceki Değer: {0:N4}}" />
+                                    </TextBlock.ToolTip>
                             </TextBlock>
-                        </DockPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
-    </DockPanel>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+    </Grid>
 </mah:MetroWindow>

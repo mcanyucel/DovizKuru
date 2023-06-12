@@ -15,6 +15,7 @@ namespace DovizKuru.viewmodels
     internal class MainViewModel : ObservableObject
     {
         public bool AlwaysOnTop { get => m_AlwaysOnTop; set => SetProperty(ref m_AlwaysOnTop, value); }
+        public bool IsSourcePageLoaded { get => m_IsSourcePageLoaded; set => SetProperty(ref m_IsSourcePageLoaded, value); }
         public static List<AlarmOperator> AlarmOperators { get => Enum.GetValues(typeof(AlarmOperator)).Cast<AlarmOperator>().ToList(); }
         public ExchangeRate? SelectedAlarmExchange { get => m_SelectedAlarmExchange; set => SetProperty(ref m_SelectedAlarmExchange, value); }
         public double SelectedAlarmValue { get => m_SelectedAlarmValue; set => SetProperty(ref m_SelectedAlarmValue, value); }
@@ -80,7 +81,11 @@ namespace DovizKuru.viewmodels
             LastUpdate = DateTime.Now;
         }
 
-        public void SourcePageLoaded() => m_UpdateTimer.Change(5000, c_UpdateTimerPeriod);
+        public void SourcePageLoaded()
+        {
+            IsSourcePageLoaded = true;
+            m_UpdateTimer.Change(5000, c_UpdateTimerPeriod);
+        }
 
         private async Task CheckAlarms()
         {
@@ -120,6 +125,7 @@ namespace DovizKuru.viewmodels
 
         #region Fields
         private bool m_IsIdle = true;
+        private bool m_IsSourcePageLoaded = false;
         private bool m_AlwaysOnTop = false;
         private bool m_ShouldQueryRates = false;
         private DateTime m_LastUpdate;
