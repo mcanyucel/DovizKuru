@@ -10,7 +10,7 @@
                  xmlns:viewmodels="clr-namespace:DovizKuru.viewmodels"
                  xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
                  
-                 ResizeMode="CanMinimize"
+                 ResizeMode="NoResize"
 				 Topmost="{Binding AlwaysOnTop}"
                  d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
         mc:Ignorable="d" SizeToContent="WidthAndHeight"
@@ -50,7 +50,7 @@
     </behaviors:Interaction.Triggers>
 
     <Grid>
-        <mah:ProgressRing Height="16" Width="16" IsActive="{Binding IsSourcePageLoaded, Converter={StaticResource BooleanInverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <mah:ProgressRing Height="16" Width="16" IsActive="{Binding IsSourcePageLoaded, Converter={StaticResource BooleanInverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4" />
         <DockPanel LastChildFill="True" Visibility="{Binding IsSourcePageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}">
             <wv2:WebView2 x:Name="webView" DockPanel.Dock="Top" Source="https://canlidoviz.com/" Width="0" Height="0" NavigationCompleted="WebView_NavigationCompleted"/>
             <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
