@@ -9,12 +9,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 
 namespace DovizKuru.viewmodels
 {
     internal class MainViewModel : ObservableObject
     {
+        public bool AlwaysOnTop { get => m_AlwaysOnTop; set => SetProperty(ref m_AlwaysOnTop, value); }
         public static List<AlarmOperator> AlarmOperators { get => Enum.GetValues(typeof(AlarmOperator)).Cast<AlarmOperator>().ToList(); }
         public ExchangeRate? SelectedAlarmExchange { get => m_SelectedAlarmExchange; set => SetProperty(ref m_SelectedAlarmExchange, value); }
         public double SelectedAlarmValue { get => m_SelectedAlarmValue; set => SetProperty(ref m_SelectedAlarmValue, value); }
@@ -66,81 +66,82 @@ namespace DovizKuru.viewmodels
         {
             AlarmList.Remove(AlarmList.First(alarm => alarm.Id == alarmId));
             m_PreferenceService.SaveAlarms(AlarmList);
-    }
+        }
 
-    private void ShowAlarmWindow() => m_WindowService.ShowAlarmSettingsWindow();
+        private void ShowAlarmWindow() => m_WindowService.ShowAlarmSettingsWindow();
 
-    private void QueryExchangeRates(object? _ = null) => ShouldQueryRates = true;
+        private void QueryExchangeRates(object? _ = null) => ShouldQueryRates = true;
 
-    public async Task OnExchangeRatesQueried(string sourceHTML)
-    {
-        ShouldQueryRates = false;
-        await m_WebService.UpdateRates(sourceHTML, ExchangeRates);
-        await CheckAlarms();
-        LastUpdate = DateTime.Now;
-    }
-
-    public void SourcePageLoaded() => m_UpdateTimer.Change(5000, c_UpdateTimerPeriod);
-
-    private async Task CheckAlarms()
-    {
-        StringBuilder sb = new();
-        await Task.Run(() =>
+        public async Task OnExchangeRatesQueried(string sourceHTML)
         {
+            ShouldQueryRates = false;
+            await m_WebService.UpdateRates(sourceHTML, ExchangeRates);
+            await CheckAlarms();
+            LastUpdate = DateTime.Now;
+        }
 
-            for (int i = 0; i < AlarmList.Count; i++)
+        public void SourcePageLoaded() => m_UpdateTimer.Change(5000, c_UpdateTimerPeriod);
+
+        private async Task CheckAlarms()
+        {
+            StringBuilder sb = new();
+            await Task.Run(() =>
             {
-                Alarm alarm = AlarmList[i];
-                if (!alarm.IsEnabled) continue;
-                ExchangeRate? rate = ExchangeRates.FirstOrDefault(rate => rate.Code == alarm.Code);
-                if (rate == null) continue;
 
-                if (alarm.AlarmOperator == AlarmOperator.GreaterThan && rate.NewBuying > alarm.Value)
+                for (int i = 0; i < AlarmList.Count; i++)
                 {
-                    sb.AppendLine($"{rate.Code} alış fiyatı {alarm.Value} TL değerinden büyük.");
-                    alarm.IsEnabled = false; // disable alarm after it is triggered
+                    Alarm alarm = AlarmList[i];
+                    if (!alarm.IsEnabled) continue;
+                    ExchangeRate? rate = ExchangeRates.FirstOrDefault(rate => rate.Code == alarm.Code);
+                    if (rate == null) continue;
+
+                    if (alarm.AlarmOperator == AlarmOperator.GreaterThan && rate.NewBuying > alarm.Value)
+                    {
+                        sb.AppendLine($"{rate.Code} alış fiyatı {alarm.Value} TL değerinden büyük.");
+                        alarm.IsEnabled = false; // disable alarm after it is triggered
+                    }
+                    else if (alarm.AlarmOperator == AlarmOperator.LessThan && rate.NewBuying < alarm.Value)
+                    {
+                        sb.AppendLine($"{rate.Code} alış fiyatı {alarm.Value} TL değerinden küçük.");
+                        alarm.IsEnabled = false; // disable alarm after it is triggered
+                    }
                 }
-                else if (alarm.AlarmOperator == AlarmOperator.LessThan && rate.NewBuying < alarm.Value)
-                {
-                    sb.AppendLine($"{rate.Code} alış fiyatı {alarm.Value} TL değerinden küçük.");
-                    alarm.IsEnabled = false; // disable alarm after it is triggered
-                }
-            }
 
-            if (sb.Length > 0)
-                m_WindowService.ShowAlarm("Alarm", sb.ToString());
+                if (sb.Length > 0)
+                    m_WindowService.ShowAlarm("Alarm", sb.ToString());
 
-        });
+            });
 
+        }
+
+        #region Command States
+        private bool LoadPreferencesCanExecute() => m_IsIdle;
+        #endregion
+
+        #region Fields
+        private bool m_IsIdle = true;
+        private bool m_AlwaysOnTop = false;
+        private bool m_ShouldQueryRates = false;
+        private DateTime m_LastUpdate;
+        private AlarmOperator m_SelectedAlarmOperator;
+        private ExchangeRate? m_SelectedAlarmExchange;
+        private double m_SelectedAlarmValue = 0.5;
+
+        private readonly IWebService m_WebService;
+        private readonly IPreferenceService m_PreferenceService;
+        private readonly IWindowService m_WindowService;
+
+        private ObservableCollection<ExchangeRate> m_ExchangeRates = new();
+
+        private readonly IAsyncRelayCommand m_LoadPreferencesCommand;
+        private readonly IRelayCommand m_ShowAlarmWindowCommand;
+        private readonly IRelayCommand m_AddAlarmCommand;
+        private readonly IRelayCommand<string> m_DeleteAlarmCommand;
+
+        private readonly Timer m_UpdateTimer;
+        private const int c_UpdateTimerPeriod = 15000; // 15 seconds
+
+        private ObservableCollection<Alarm> m_AlarmList = new();
+        #endregion
     }
-
-    #region Command States
-    private bool LoadPreferencesCanExecute() => m_IsIdle;
-    #endregion
-
-    #region Fields
-    private bool m_IsIdle = true;
-    private bool m_ShouldQueryRates = false;
-    private DateTime m_LastUpdate;
-    private AlarmOperator m_SelectedAlarmOperator;
-    private ExchangeRate? m_SelectedAlarmExchange;
-    private double m_SelectedAlarmValue = 0.5;
-
-    private readonly IWebService m_WebService;
-    private readonly IPreferenceService m_PreferenceService;
-    private readonly IWindowService m_WindowService;
-
-    private ObservableCollection<ExchangeRate> m_ExchangeRates = new();
-
-    private readonly IAsyncRelayCommand m_LoadPreferencesCommand;
-    private readonly IRelayCommand m_ShowAlarmWindowCommand;
-    private readonly IRelayCommand m_AddAlarmCommand;
-    private readonly IRelayCommand<string> m_DeleteAlarmCommand;
-
-    private readonly Timer m_UpdateTimer;
-    private const int c_UpdateTimerPeriod = 15000; // 15 seconds
-
-    private ObservableCollection<Alarm> m_AlarmList = new();
-    #endregion
-}
 }

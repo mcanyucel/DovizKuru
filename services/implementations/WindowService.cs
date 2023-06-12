@@ -1,6 +1,6 @@
 ﻿using DovizKuru.views;
-using System;
 using Microsoft.Toolkit.Uwp.Notifications;
+using System;
 
 namespace DovizKuru.services.implementations
 {
