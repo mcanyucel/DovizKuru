@@ -25,6 +25,7 @@ namespace DovizKuru
             services.AddSingleton<ILogService, LogService>();
             services.AddSingleton<IWebService, WebService>();
             services.AddSingleton<IPreferenceService, PreferenceService>();
+            services.AddSingleton<IMediaService, MediaService>();  
             return services.BuildServiceProvider();
         }
         public IServiceProvider ServiceProvider { get; }

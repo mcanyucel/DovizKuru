@@ -31,11 +31,12 @@ namespace DovizKuru.viewmodels
         public ObservableCollection<KeyValuePair<DateTime, string>> AlarmHistory { get => m_AlarmHistory; }
 
         public DateTime LastUpdate { get => m_LastUpdate; private set => SetProperty(ref m_LastUpdate, value); }
-        public MainViewModel(IWebService webService, IPreferenceService preferenceService, IWindowService windowService)
+        public MainViewModel(IWebService webService, IPreferenceService preferenceService, IWindowService windowService, IMediaService mediaService)
         {
             m_WebService = webService;
             m_PreferenceService = preferenceService;
             m_WindowService = windowService;
+            m_MediaService = mediaService;
 
             m_LoadPreferencesCommand = new AsyncRelayCommand(LoadPreferences, LoadPreferencesCanExecute);
             m_ShowAlarmWindowCommand = new RelayCommand(ShowAlarmWindow);
@@ -118,6 +119,7 @@ namespace DovizKuru.viewmodels
                     var alarmText = sb.ToString();
                     m_WindowService.ShowAlarm("Alarm", alarmText);
                     AlarmHistory.Add(new(DateTime.Now, alarmText));
+                    m_MediaService.PlayAlarm();
                 }
 
             });
@@ -141,6 +143,7 @@ namespace DovizKuru.viewmodels
         private readonly IWebService m_WebService;
         private readonly IPreferenceService m_PreferenceService;
         private readonly IWindowService m_WindowService;
+        private readonly IMediaService m_MediaService;
 
         private ObservableCollection<ExchangeRate> m_ExchangeRates = new();
 
