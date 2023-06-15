@@ -8,14 +8,18 @@
     <ApplicationIcon>assets\icon.ico</ApplicationIcon>
     <FileVersion>1.0.4</FileVersion>
     <AssemblyVersion>1.0.4</AssemblyVersion>
+    <PackageIcon>icon.ico</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="assets\bell.wav" />
     <None Remove="assets\preferences.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="assets\icon.ico" />
+    <Content Include="assets\bell.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="assets\preferences.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -30,6 +34,17 @@
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1823.32" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="assets\icon.ico">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="assets\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

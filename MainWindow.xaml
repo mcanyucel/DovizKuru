@@ -9,7 +9,6 @@
                  xmlns:converters="clr-namespace:DovizKuru.converters"
                  xmlns:viewmodels="clr-namespace:DovizKuru.viewmodels"
                  xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-                 
                  ResizeMode="NoResize"
 				 Topmost="{Binding AlwaysOnTop}"
                  d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
@@ -42,6 +41,7 @@
         <converters:ChangeColorConverter x:Key="ChangeColorConverter" />
         <converters:ChangeIconConverter x:Key="ChangeIconConverter" />
         <converters:BooleanInverter x:Key="BooleanInverter" />
+        <converters:AlarmColorConverter x:Key="AlarmColorConverter" />
     </mah:MetroWindow.Resources>
     <behaviors:Interaction.Triggers>
         <behaviors:EventTrigger EventName="Loaded">
@@ -54,31 +54,62 @@
         <DockPanel LastChildFill="True" Visibility="{Binding IsSourcePageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}">
             <wv2:WebView2 x:Name="webView" DockPanel.Dock="Top" Source="https://canlidoviz.com/" Width="0" Height="0" NavigationCompleted="WebView_NavigationCompleted"/>
             <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding ExchangeRates}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <DockPanel LastChildFill="True" x:Name="dock">
-                                <TextBlock Text="{Binding Name, Mode=OneTime}" Margin="4" DockPanel.Dock="Left" VerticalAlignment="Center" />
-                                <Line Y1="0" Y2="20" Stroke="Red" StrokeThickness="2" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="4,4,4,4" />
-                                <icons:PackIconMaterial Kind="{Binding ChangeRate, Converter={StaticResource ChangeIconConverter}}" Foreground="{Binding ChangeRate, Converter={StaticResource ChangeColorConverter}}" DockPanel.Dock="Right" Width="20" Height="20" Margin="4,4,8,4">
-                                    <icons:PackIconMaterial.ToolTip>
-                                        <TextBlock Text="{Binding ChangePercentage, StringFormat=Değişim: %{0:N1}}" />
-                                    </icons:PackIconMaterial.ToolTip>
-                                </icons:PackIconMaterial>
-                                <TextBlock Text="{Binding NewBuying}" Margin="4" VerticalAlignment="Center">
-                                    <TextBlock.ToolTip>
-                                        <TextBlock Text="{Binding Path=OldBuying, StringFormat=Önceki Değer: {0:N4}}" />
-                                    </TextBlock.ToolTip>
+                <StackPanel Orientation="Horizontal">
+                    <ItemsControl ItemsSource="{Binding ExchangeRates}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel LastChildFill="True" x:Name="dock">
+                                    <TextBlock Text="{Binding Name, Mode=OneTime}" Margin="4" DockPanel.Dock="Left" VerticalAlignment="Center" />
+                                    <Line Y1="0" Y2="20" Stroke="Red" StrokeThickness="2" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="4,4,4,4" />
+                                    <icons:PackIconMaterial Kind="{Binding ChangeRate, Converter={StaticResource ChangeIconConverter}}" Foreground="{Binding ChangeRate, Converter={StaticResource ChangeColorConverter}}" DockPanel.Dock="Right" Width="20" Height="20" Margin="4,4,8,4">
+                                        <icons:PackIconMaterial.ToolTip>
+                                            <TextBlock Text="{Binding ChangePercentage, StringFormat=Değişim: %{0:N1}}" />
+                                        </icons:PackIconMaterial.ToolTip>
+                                    </icons:PackIconMaterial>
+                                    <TextBlock Text="{Binding NewBuying}" Margin="4" VerticalAlignment="Center">
+                                        <TextBlock.ToolTip>
+                                            <TextBlock Text="{Binding Path=OldBuying, StringFormat=Önceki Değer: {0:N4}}" />
+                                        </TextBlock.ToolTip>
                             </TextBlock>
-                            </DockPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <ToggleButton x:Name="btnNotificationHistory" IsChecked="{Binding IsAlarmHistoryOpen}" Style="{StaticResource MahApps.Styles.ToggleButton.Circle}" Width="16" Height="16" BorderThickness="0" ToolTip="Geçmiş Alarmlar">
+                        <icons:PackIconMaterial Kind="Bell" Width="12" Height="12" Foreground="{Binding AlarmHistory.Count, Converter={StaticResource AlarmColorConverter}}" />
+                    </ToggleButton>
+                    <TextBlock Text="{Binding AlarmHistory.Count}" Foreground="{Binding AlarmHistory.Count, Converter={StaticResource AlarmColorConverter}}" Margin="0,0,4,0" />
+
+                    <Popup PlacementTarget="{Binding ElementName=btnNotificationHistory}" IsOpen="{Binding IsAlarmHistoryOpen}" Placement="Bottom">
+                        <behaviors:Interaction.Triggers>
+                            <behaviors:EventTrigger EventName="MouseLeave">
+                                <behaviors:InvokeCommandAction Command="{Binding CloseAlarmHistoryCommand}" />
+                            </behaviors:EventTrigger>
+                        </behaviors:Interaction.Triggers>
+                        <StackPanel Background="Azure">
+                            <ItemsControl ItemsSource="{Binding AlarmHistory}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderThickness="4,4,4,2" BorderBrush="LightBlue">
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Style="{StaticResource MahApps.Styles.Button.Circle}" BorderThickness="0" Command="{Binding DataContext.RemoveAlarmItemCommand, RelativeSource={RelativeSource AncestorType=mah:MetroWindow}}" CommandParameter="{Binding}">
+                                                    <icons:PackIconMaterial Kind="Close" Width="8" Height="8" Foreground="Red" Margin="4" />
+                                                </Button>
+                                                <TextBlock Margin="4" Text="{Binding Time}" VerticalAlignment="Center" />
+                                                <TextBlock Margin="4" Text="{Binding Message}" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Popup>
+                </StackPanel>
             </ScrollViewer>
         </DockPanel>
     </Grid>
