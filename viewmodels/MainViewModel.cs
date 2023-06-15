@@ -24,6 +24,8 @@ namespace DovizKuru.viewmodels
         public IRelayCommand ShowAlarmWindowCommand { get => m_ShowAlarmWindowCommand; }
         public IRelayCommand AddAlarmCommand { get => m_AddAlarmCommand; }
         public IRelayCommand<string> DeleteAlarmCommand { get => m_DeleteAlarmCommand; }
+        public IRelayCommand CloseAlarmHistoryCommand { get => m_CloseAlarmHistoryCommand; }
+        public IRelayCommand<AlarmItem> RemoveAlarmItemCommand { get => m_RemoveAlarmItemCommand; }
         public bool IsIdle { get => m_IsIdle; private set => SetProperty(ref m_IsIdle, value); }
         public bool ShouldQueryRates { get => m_ShouldQueryRates; private set => SetProperty(ref m_ShouldQueryRates, value); }
         public ObservableCollection<ExchangeRate> ExchangeRates { get => m_ExchangeRates; private set => SetProperty(ref m_ExchangeRates, value); }
@@ -43,6 +45,8 @@ namespace DovizKuru.viewmodels
             m_ShowAlarmWindowCommand = new RelayCommand(ShowAlarmWindow);
             m_AddAlarmCommand = new RelayCommand(AddAlarm);
             m_DeleteAlarmCommand = new RelayCommand<string?>(DeleteAlarm);
+            m_CloseAlarmHistoryCommand = new RelayCommand(() => IsAlarmHistoryOpen = false);
+            m_RemoveAlarmItemCommand = new RelayCommand<AlarmItem>(RemoveAlarmItem);
 
             m_Commands = new IRelayCommand[] { m_LoadPreferencesCommand, m_ShowAlarmWindowCommand, m_AddAlarmCommand, m_DeleteAlarmCommand };
             m_AsyncCommands = new IAsyncRelayCommand[] { m_LoadPreferencesCommand };
@@ -50,6 +54,7 @@ namespace DovizKuru.viewmodels
             m_UpdateTimer = new(QueryExchangeRates, null, Timeout.Infinite, Timeout.Infinite);
         }
 
+        private void RemoveAlarmItem(AlarmItem item) => AlarmHistory.Remove(item);
 
         private async Task LoadPreferences()
         {
@@ -98,7 +103,6 @@ namespace DovizKuru.viewmodels
             StringBuilder sb = new();
             await Task.Run(() =>
             {
-
                 for (int i = 0; i < AlarmList.Count; i++)
                 {
                     Alarm alarm = AlarmList[i];
@@ -123,10 +127,11 @@ namespace DovizKuru.viewmodels
                     var alarmText = sb.ToString().Remove(sb.Length - 2); // remove last new line
                     m_WindowService.ShowAlarm("Alarm", alarmText);
                     m_MediaService.PlayAlarm();
-                    App.Current.Dispatcher.Invoke(() =>
+                    App.Current.Dispatcher.Invoke(async () =>
                     {
                         AlarmHistory.Add(new AlarmItem { Time = DateTime.Now, Message = alarmText });
                         UpdateCommandStates();
+                        await m_PreferenceService.SaveAlarms(AlarmList);
                     });
                 }
 
@@ -168,7 +173,8 @@ namespace DovizKuru.viewmodels
         private readonly IRelayCommand m_ShowAlarmWindowCommand;
         private readonly IRelayCommand m_AddAlarmCommand;
         private readonly IRelayCommand<string> m_DeleteAlarmCommand;
-
+        private readonly IRelayCommand m_CloseAlarmHistoryCommand;
+        private readonly IRelayCommand<AlarmItem> m_RemoveAlarmItemCommand;
         private readonly IRelayCommand[] m_Commands;
         private readonly IAsyncRelayCommand[] m_AsyncCommands;
 

@@ -9,7 +9,6 @@
                  xmlns:converters="clr-namespace:DovizKuru.converters"
                  xmlns:viewmodels="clr-namespace:DovizKuru.viewmodels"
                  xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-                 
                  ResizeMode="NoResize"
 				 Topmost="{Binding AlwaysOnTop}"
                  d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
@@ -81,17 +80,26 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <ToggleButton x:Name="btnNotificationHistory" IsChecked="{Binding IsAlarmHistoryOpen}" Style="{StaticResource MahApps.Styles.ToggleButton.Circle}" Width="16" Height="16" BorderThickness="0">
+                    <ToggleButton x:Name="btnNotificationHistory" IsChecked="{Binding IsAlarmHistoryOpen}" Style="{StaticResource MahApps.Styles.ToggleButton.Circle}" Width="16" Height="16" BorderThickness="0" ToolTip="Geçmiş Alarmlar">
                         <icons:PackIconMaterial Kind="Bell" Width="12" Height="12" Foreground="{Binding AlarmHistory.Count, Converter={StaticResource AlarmColorConverter}}" />
                     </ToggleButton>
+                    <TextBlock Text="{Binding AlarmHistory.Count}" Foreground="{Binding AlarmHistory.Count, Converter={StaticResource AlarmColorConverter}}" Margin="0,0,4,0" />
 
                     <Popup PlacementTarget="{Binding ElementName=btnNotificationHistory}" IsOpen="{Binding IsAlarmHistoryOpen}" Placement="Bottom">
-                        <StackPanel Background="LightBlue">
+                        <behaviors:Interaction.Triggers>
+                            <behaviors:EventTrigger EventName="MouseLeave">
+                                <behaviors:InvokeCommandAction Command="{Binding CloseAlarmHistoryCommand}" />
+                            </behaviors:EventTrigger>
+                        </behaviors:Interaction.Triggers>
+                        <StackPanel Background="Azure">
                             <ItemsControl ItemsSource="{Binding AlarmHistory}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border BorderThickness="5" BorderBrush="Blue">
+                                        <Border BorderThickness="4,4,4,2" BorderBrush="LightBlue">
                                             <StackPanel Orientation="Horizontal">
+                                                <Button Style="{StaticResource MahApps.Styles.Button.Circle}" BorderThickness="0" Command="{Binding DataContext.RemoveAlarmItemCommand, RelativeSource={RelativeSource AncestorType=mah:MetroWindow}}" CommandParameter="{Binding}">
+                                                    <icons:PackIconMaterial Kind="Close" Width="8" Height="8" Foreground="Red" Margin="4" />
+                                                </Button>
                                                 <TextBlock Margin="4" Text="{Binding Time}" VerticalAlignment="Center" />
                                                 <TextBlock Margin="4" Text="{Binding Message}" VerticalAlignment="Center" />
                                             </StackPanel>
