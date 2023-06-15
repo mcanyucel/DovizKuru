@@ -28,6 +28,7 @@ namespace DovizKuru.viewmodels
         public ObservableCollection<ExchangeRate> ExchangeRates { get => m_ExchangeRates; private set => SetProperty(ref m_ExchangeRates, value); }
         public ObservableCollection<Alarm> AlarmList { get => m_AlarmList; private set => SetProperty(ref m_AlarmList, value); }
         public AlarmOperator SelectedAlarmOperator { get => m_SelectedAlarmOperator; set => SetProperty(ref m_SelectedAlarmOperator, value); }
+        public ObservableCollection<KeyValuePair<DateTime, string>> AlarmHistory { get => m_AlarmHistory; }
 
         public DateTime LastUpdate { get => m_LastUpdate; private set => SetProperty(ref m_LastUpdate, value); }
         public MainViewModel(IWebService webService, IPreferenceService preferenceService, IWindowService windowService)
@@ -113,7 +114,11 @@ namespace DovizKuru.viewmodels
                 }
 
                 if (sb.Length > 0)
-                    m_WindowService.ShowAlarm("Alarm", sb.ToString());
+                {
+                    var alarmText = sb.ToString();
+                    m_WindowService.ShowAlarm("Alarm", alarmText);
+                    AlarmHistory.Add(new(DateTime.Now, alarmText));
+                }
 
             });
 
@@ -148,6 +153,7 @@ namespace DovizKuru.viewmodels
         private const int c_UpdateTimerPeriod = 15000; // 15 seconds
 
         private ObservableCollection<Alarm> m_AlarmList = new();
+        private ObservableCollection<KeyValuePair<DateTime, string>> m_AlarmHistory = new();
         #endregion
     }
 }
