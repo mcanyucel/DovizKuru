@@ -1,18 +1,16 @@
 ﻿<mah:MetroWindow x:Class="DovizKuru.views.AlarmHistoryWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                         xmlns:converters="clr-namespace:DovizKuru.converters"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:viewmodels="clr-namespace:DovizKuru.viewmodels"
-        xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
-        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" 
                  d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
                  mc:Ignorable="d"
         WindowStyle="ToolWindow"
         ResizeMode="NoResize"
         Title="Alarm Geçmişi" Height="450" Width="800">
     <Grid>
-
+ 
     </Grid>
 </mah:MetroWindow>

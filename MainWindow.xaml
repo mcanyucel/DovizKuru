@@ -54,31 +54,52 @@
         <DockPanel LastChildFill="True" Visibility="{Binding IsSourcePageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}">
             <wv2:WebView2 x:Name="webView" DockPanel.Dock="Top" Source="https://canlidoviz.com/" Width="0" Height="0" NavigationCompleted="WebView_NavigationCompleted"/>
             <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding ExchangeRates}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <DockPanel LastChildFill="True" x:Name="dock">
-                                <TextBlock Text="{Binding Name, Mode=OneTime}" Margin="4" DockPanel.Dock="Left" VerticalAlignment="Center" />
-                                <Line Y1="0" Y2="20" Stroke="Red" StrokeThickness="2" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="4,4,4,4" />
-                                <icons:PackIconMaterial Kind="{Binding ChangeRate, Converter={StaticResource ChangeIconConverter}}" Foreground="{Binding ChangeRate, Converter={StaticResource ChangeColorConverter}}" DockPanel.Dock="Right" Width="20" Height="20" Margin="4,4,8,4">
-                                    <icons:PackIconMaterial.ToolTip>
-                                        <TextBlock Text="{Binding ChangePercentage, StringFormat=Değişim: %{0:N1}}" />
-                                    </icons:PackIconMaterial.ToolTip>
-                                </icons:PackIconMaterial>
-                                <TextBlock Text="{Binding NewBuying}" Margin="4" VerticalAlignment="Center">
-                                    <TextBlock.ToolTip>
-                                        <TextBlock Text="{Binding Path=OldBuying, StringFormat=Önceki Değer: {0:N4}}" />
-                                    </TextBlock.ToolTip>
+                <StackPanel Orientation="Horizontal">
+                    <ItemsControl ItemsSource="{Binding ExchangeRates}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel LastChildFill="True" x:Name="dock">
+                                    <TextBlock Text="{Binding Name, Mode=OneTime}" Margin="4" DockPanel.Dock="Left" VerticalAlignment="Center" />
+                                    <Line Y1="0" Y2="20" Stroke="Red" StrokeThickness="2" DockPanel.Dock="Right" VerticalAlignment="Center" Margin="4,4,4,4" />
+                                    <icons:PackIconMaterial Kind="{Binding ChangeRate, Converter={StaticResource ChangeIconConverter}}" Foreground="{Binding ChangeRate, Converter={StaticResource ChangeColorConverter}}" DockPanel.Dock="Right" Width="20" Height="20" Margin="4,4,8,4">
+                                        <icons:PackIconMaterial.ToolTip>
+                                            <TextBlock Text="{Binding ChangePercentage, StringFormat=Değişim: %{0:N1}}" />
+                                        </icons:PackIconMaterial.ToolTip>
+                                    </icons:PackIconMaterial>
+                                    <TextBlock Text="{Binding NewBuying}" Margin="4" VerticalAlignment="Center">
+                                        <TextBlock.ToolTip>
+                                            <TextBlock Text="{Binding Path=OldBuying, StringFormat=Önceki Değer: {0:N4}}" />
+                                        </TextBlock.ToolTip>
                             </TextBlock>
-                            </DockPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <ToggleButton x:Name="btnNotificationHistory" IsChecked="{Binding IsAlarmHistoryOpen}" Style="{StaticResource MahApps.Styles.ToggleButton.Circle}" Width="16" Height="16" BorderThickness="0">
+                        <icons:PackIconMaterial Kind="Bell" Width="12" Height="12" />
+                    </ToggleButton>
+                    <Popup PlacementTarget="{Binding ElementName=btnNotificationHistory}" IsOpen="{Binding IsAlarmHistoryOpen}" Placement="Bottom">
+                        <StackPanel Background="LightBlue">
+                            <ItemsControl ItemsSource="{Binding AlarmHistory}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderThickness="5" BorderBrush="Blue">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Margin="4" Text="{Binding Time}" VerticalAlignment="Center" />
+                                                <TextBlock Margin="4" Text="{Binding Message}" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Popup>
+                </StackPanel>
             </ScrollViewer>
         </DockPanel>
     </Grid>

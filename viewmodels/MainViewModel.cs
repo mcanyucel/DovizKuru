@@ -16,6 +16,7 @@ namespace DovizKuru.viewmodels
     {
         public bool AlwaysOnTop { get => m_AlwaysOnTop; set => SetProperty(ref m_AlwaysOnTop, value); }
         public bool IsSourcePageLoaded { get => m_IsSourcePageLoaded; set => SetProperty(ref m_IsSourcePageLoaded, value); }
+        public bool IsAlarmHistoryOpen { get => m_IsAlarmHistoryOpen; set => SetProperty(ref m_IsAlarmHistoryOpen, value); }
         public static List<AlarmOperator> AlarmOperators { get => Enum.GetValues(typeof(AlarmOperator)).Cast<AlarmOperator>().ToList(); }
         public ExchangeRate? SelectedAlarmExchange { get => m_SelectedAlarmExchange; set => SetProperty(ref m_SelectedAlarmExchange, value); }
         public double SelectedAlarmValue { get => m_SelectedAlarmValue; set => SetProperty(ref m_SelectedAlarmValue, value); }
@@ -28,7 +29,7 @@ namespace DovizKuru.viewmodels
         public ObservableCollection<ExchangeRate> ExchangeRates { get => m_ExchangeRates; private set => SetProperty(ref m_ExchangeRates, value); }
         public ObservableCollection<Alarm> AlarmList { get => m_AlarmList; private set => SetProperty(ref m_AlarmList, value); }
         public AlarmOperator SelectedAlarmOperator { get => m_SelectedAlarmOperator; set => SetProperty(ref m_SelectedAlarmOperator, value); }
-        public ObservableCollection<KeyValuePair<DateTime, string>> AlarmHistory { get => m_AlarmHistory; }
+        public ObservableCollection<AlarmItem> AlarmHistory { get => m_AlarmHistory; }
 
         public DateTime LastUpdate { get => m_LastUpdate; private set => SetProperty(ref m_LastUpdate, value); }
         public MainViewModel(IWebService webService, IPreferenceService preferenceService, IWindowService windowService, IMediaService mediaService)
@@ -42,6 +43,9 @@ namespace DovizKuru.viewmodels
             m_ShowAlarmWindowCommand = new RelayCommand(ShowAlarmWindow);
             m_AddAlarmCommand = new RelayCommand(AddAlarm);
             m_DeleteAlarmCommand = new RelayCommand<string?>(DeleteAlarm);
+
+            m_Commands = new IRelayCommand[] { m_LoadPreferencesCommand, m_ShowAlarmWindowCommand, m_AddAlarmCommand, m_DeleteAlarmCommand };
+            m_AsyncCommands = new IAsyncRelayCommand[] { m_LoadPreferencesCommand };
 
             m_UpdateTimer = new(QueryExchangeRates, null, Timeout.Infinite, Timeout.Infinite);
         }
@@ -116,10 +120,14 @@ namespace DovizKuru.viewmodels
 
                 if (sb.Length > 0)
                 {
-                    var alarmText = sb.ToString();
+                    var alarmText = sb.ToString().Remove(sb.Length - 2); // remove last new line
                     m_WindowService.ShowAlarm("Alarm", alarmText);
-                    AlarmHistory.Add(new(DateTime.Now, alarmText));
                     m_MediaService.PlayAlarm();
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        AlarmHistory.Add(new AlarmItem { Time = DateTime.Now, Message = alarmText });
+                        UpdateCommandStates();
+                    });
                 }
 
             });
@@ -127,6 +135,14 @@ namespace DovizKuru.viewmodels
         }
 
         #region Command States
+        private void UpdateCommandStates()
+        {
+            foreach (var command in m_Commands)
+                command.NotifyCanExecuteChanged();
+
+            foreach (var command in m_AsyncCommands)
+                command.NotifyCanExecuteChanged();
+        }
         private bool LoadPreferencesCanExecute() => m_IsIdle;
         #endregion
 
@@ -135,6 +151,7 @@ namespace DovizKuru.viewmodels
         private bool m_IsSourcePageLoaded = false;
         private bool m_AlwaysOnTop = false;
         private bool m_ShouldQueryRates = false;
+        private bool m_IsAlarmHistoryOpen = false;
         private DateTime m_LastUpdate;
         private AlarmOperator m_SelectedAlarmOperator;
         private ExchangeRate? m_SelectedAlarmExchange;
@@ -152,11 +169,14 @@ namespace DovizKuru.viewmodels
         private readonly IRelayCommand m_AddAlarmCommand;
         private readonly IRelayCommand<string> m_DeleteAlarmCommand;
 
+        private readonly IRelayCommand[] m_Commands;
+        private readonly IAsyncRelayCommand[] m_AsyncCommands;
+
         private readonly Timer m_UpdateTimer;
         private const int c_UpdateTimerPeriod = 15000; // 15 seconds
 
         private ObservableCollection<Alarm> m_AlarmList = new();
-        private ObservableCollection<KeyValuePair<DateTime, string>> m_AlarmHistory = new();
+        private ObservableCollection<AlarmItem> m_AlarmHistory = new();
         #endregion
     }
 }
