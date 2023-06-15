@@ -42,6 +42,7 @@
         <converters:ChangeColorConverter x:Key="ChangeColorConverter" />
         <converters:ChangeIconConverter x:Key="ChangeIconConverter" />
         <converters:BooleanInverter x:Key="BooleanInverter" />
+        <converters:AlarmColorConverter x:Key="AlarmColorConverter" />
     </mah:MetroWindow.Resources>
     <behaviors:Interaction.Triggers>
         <behaviors:EventTrigger EventName="Loaded">
@@ -81,8 +82,9 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                     <ToggleButton x:Name="btnNotificationHistory" IsChecked="{Binding IsAlarmHistoryOpen}" Style="{StaticResource MahApps.Styles.ToggleButton.Circle}" Width="16" Height="16" BorderThickness="0">
-                        <icons:PackIconMaterial Kind="Bell" Width="12" Height="12" />
+                        <icons:PackIconMaterial Kind="Bell" Width="12" Height="12" Foreground="{Binding AlarmHistory.Count, Converter={StaticResource AlarmColorConverter}}" />
                     </ToggleButton>
+
                     <Popup PlacementTarget="{Binding ElementName=btnNotificationHistory}" IsOpen="{Binding IsAlarmHistoryOpen}" Placement="Bottom">
                         <StackPanel Background="LightBlue">
                             <ItemsControl ItemsSource="{Binding AlarmHistory}">

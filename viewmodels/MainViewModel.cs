@@ -176,7 +176,7 @@ namespace DovizKuru.viewmodels
         private const int c_UpdateTimerPeriod = 15000; // 15 seconds
 
         private ObservableCollection<Alarm> m_AlarmList = new();
-        private ObservableCollection<AlarmItem> m_AlarmHistory = new();
+        private readonly ObservableCollection<AlarmItem> m_AlarmHistory = new();
         #endregion
     }
 }
