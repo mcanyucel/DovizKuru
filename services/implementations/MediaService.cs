@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Windows.Media;
 
 namespace DovizKuru.services.implementations
@@ -25,7 +27,7 @@ namespace DovizKuru.services.implementations
 
         #region Fields
         private readonly MediaPlayer m_MediaPlayer = new();
-        private const string ALARM_SOUND_PATH = @"assets\bell.wav";
+        private readonly string ALARM_SOUND_PATH = Path.Combine(Assembly.GetExecutingAssembly().Location, "assets\\bell.wav");
         private readonly ILogService m_LogService;
         #endregion
     }
