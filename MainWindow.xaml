@@ -52,7 +52,7 @@
     <Grid>
         <mah:ProgressRing Height="16" Width="16" IsActive="{Binding IsSourcePageLoaded, Converter={StaticResource BooleanInverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4" />
         <DockPanel LastChildFill="True" Visibility="{Binding IsSourcePageLoaded, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <wv2:WebView2 x:Name="webView" DockPanel.Dock="Top" Source="https://canlidoviz.com/" Width="0" Height="0" NavigationCompleted="WebView_NavigationCompleted"/>
+            <wv2:WebView2 x:Name="webView" DockPanel.Dock="Top" Source="" Width="0" Height="0" NavigationCompleted="WebView_NavigationCompleted" />
             <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
                 <StackPanel Orientation="Horizontal">
                     <ItemsControl ItemsSource="{Binding ExchangeRates}">
