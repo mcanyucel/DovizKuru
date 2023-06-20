@@ -1,4 +1,5 @@
 ﻿using DovizKuru.viewmodels;
+using Microsoft.Web.WebView2.Core;
 using System;
 using System.Text.RegularExpressions;
 
@@ -21,6 +22,15 @@ namespace DovizKuru
                     QueryExchangeRates();
             };
             InitializeComponent();
+            InitializeAsync();
+        }
+
+        async void InitializeAsync()
+        {
+            string userDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\DovizKuru";
+            var environment = await CoreWebView2Environment.CreateAsync(userDataFolder: userDataFolder);
+            await webView.EnsureCoreWebView2Async(environment);
+            webView.CoreWebView2.Navigate("https://canlidoviz.com/");
         }
 
         private void QueryExchangeRates()
@@ -35,7 +45,6 @@ namespace DovizKuru
 
         private async void WebView_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
-            await webView.EnsureCoreWebView2Async(null);
             // the value can be get directly with javascript, but it is not reliable
             string html = ProcessHTML(await webView.ExecuteScriptAsync("document.documentElement.outerHTML;"));
             m_MainViewModel?.OnExchangeRatesQueried(html);

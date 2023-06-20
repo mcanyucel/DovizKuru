@@ -1,0 +1,9 @@
+﻿<!--
+This file contains the declaration of all the localizable strings.
+-->
+<WixLocalization xmlns="http://wixtoolset.org/schemas/v4/wxl" Culture="tr-TR" Codepage="Windows-1254">
+
+	<String Id="DowngradeError" Value="Daha güncel bir [ProductName] zaten yüklü." />
+	<String Id="DotNetError" Value="Bu uygulama .NET Framework 4.72 veya güncelini gerektirir."/>
+
+</WixLocalization>
