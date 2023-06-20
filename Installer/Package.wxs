@@ -1,6 +1,6 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
 	 xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-	<Package Name="Döviz Takip" Manufacturer="MCY Yazılım" Version="1.0.4.0" UpgradeCode="0d5b56c2-a581-4834-878f-c46268cdcb19" Codepage="Windows-1254">
+	<Package Name="Döviz Kuru" Manufacturer="MCY Yazılım" Version="1.0.4.0" UpgradeCode="0d5b56c2-a581-4834-878f-c46268cdcb19" Codepage="Windows-1254">
 		<MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
 		<MediaTemplate EmbedCab="yes" />
 
@@ -12,6 +12,10 @@
 			  Id="WixUILicenseRtf"
 			  Value="license.rtf" />
 
+		<WixVariable
+			Id="WixUIDialogBmp"
+			Value="banner.png"  />
+
 		<PropertyRef Id="WIX_IS_NETFRAMEWORK_472_OR_LATER_INSTALLED" />
 		<Launch
 			  Message="!(loc.DotNetError)"
@@ -19,6 +23,7 @@
 
 		<Feature Id="Main">
 			<ComponentGroupRef Id="MainComponents" />
+			<ComponentRef Id="StartMenuComponent" />
 		</Feature>
 	</Package>
 </Wix>
