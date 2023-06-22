@@ -1,6 +1,7 @@
 ﻿using DovizKuru.views;
 using Microsoft.Toolkit.Uwp.Notifications;
 using System;
+using System.Windows;
 
 namespace DovizKuru.services.implementations
 {
@@ -41,6 +42,8 @@ namespace DovizKuru.services.implementations
         {
             throw new NotImplementedException();
         }
+
+       public bool ShowUpdateWindowDialog() => MessageBox.Show("Yeni bir sürüm mevcut. İndirip kurmak ister misiniz?", "Güncelleme Var", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
 
         public void Dispose()
         {

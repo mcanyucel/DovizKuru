@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>assets\icon.ico</ApplicationIcon>
-    <FileVersion></FileVersion>
-    <AssemblyVersion>1.0.5.4</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
     <PackageIcon>icon.ico</PackageIcon>
   </PropertyGroup>
 
@@ -30,6 +30,12 @@
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1823.32" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="AutoUpdater">
+      <HintPath>..\AutoUpdater\bin\Release\net7.0-windows\publish\AutoUpdater.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
