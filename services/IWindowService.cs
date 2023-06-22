@@ -7,5 +7,6 @@
         public void ShowPreferenceWindow();
         public void ShowAlarmSettingsWindow();
         public void ShowAlarm(string title, string message);
+        public bool ShowUpdateWindowDialog();
     }
 }

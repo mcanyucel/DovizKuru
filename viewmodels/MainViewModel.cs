@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using AutoUpdater;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DovizKuru.models;
 using DovizKuru.services;
@@ -6,9 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace DovizKuru.viewmodels
 {
@@ -52,6 +55,9 @@ namespace DovizKuru.viewmodels
             m_AsyncCommands = new IAsyncRelayCommand[] { m_LoadPreferencesCommand };
 
             m_UpdateTimer = new(QueryExchangeRates, null, Timeout.Infinite, Timeout.Infinite);
+
+            var executingAssemblyName = Assembly.GetExecutingAssembly().GetName();
+            m_UpdateEngine = new(executingAssemblyName.Name!, executingAssemblyName.Version!.ToString(), "https://software.mustafacanyucel.com/update");
         }
 
         private void RemoveAlarmItem(AlarmItem item) => AlarmHistory.Remove(item);
@@ -63,6 +69,21 @@ namespace DovizKuru.viewmodels
             SelectedAlarmExchange = ExchangeRates.First();
 
             AlarmList = (ObservableCollection<Alarm>)await m_PreferenceService.LoadAlarms();
+
+            var hasUpdate = await m_UpdateEngine.CheckForUpdateAsync();
+            if (hasUpdate)
+            {
+                var shouldUpdate = m_WindowService.ShowUpdateWindowDialog();
+                if (shouldUpdate)
+                {
+                    var downloaded = await m_UpdateEngine.DownloadAndRunUpdate();
+                    if (downloaded)
+                        Application.Current.Shutdown();
+                    else
+                        m_WindowService.ShowMessage("Hata", "Güncelleme indirilemedi.");
+                }
+            }
+
             IsIdle = true;
         }
 
@@ -183,6 +204,8 @@ namespace DovizKuru.viewmodels
 
         private ObservableCollection<Alarm> m_AlarmList = new();
         private readonly ObservableCollection<AlarmItem> m_AlarmHistory = new();
+
+        private readonly UpdateEngine m_UpdateEngine;
         #endregion
     }
 }
