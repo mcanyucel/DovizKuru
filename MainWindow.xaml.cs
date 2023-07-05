@@ -20,6 +20,8 @@ namespace DovizKuru
             {
                 if (e.PropertyName == nameof(MainViewModel.ShouldQueryRates) && m_MainViewModel.ShouldQueryRates)
                     QueryExchangeRates();
+                else if (e.PropertyName == nameof(MainViewModel.ShouldReloadPage) && m_MainViewModel.ShouldReloadPage)
+                    ReloadPage();
             };
             InitializeComponent();
             InitializeAsync();
@@ -33,6 +35,8 @@ namespace DovizKuru
             webView.CoreWebView2.Navigate("https://canlidoviz.com/");
         }
 
+        private void ReloadPage() => App.Current.Dispatcher.Invoke(() => webView.CoreWebView2.Navigate("https://canlidoviz.com/"));
+
         private void QueryExchangeRates()
         {
             App.Current.Dispatcher.Invoke(async () =>
@@ -45,7 +49,7 @@ namespace DovizKuru
 
         private async void WebView_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
         {
-            // the value can be get directly with javascript, but it is not reliable
+            // the value can be get directly with JavaScript, but it is not reliable
             string html = ProcessHTML(await webView.ExecuteScriptAsync("document.documentElement.outerHTML;"));
             m_MainViewModel?.OnExchangeRatesQueried(html);
             m_MainViewModel?.SourcePageLoaded();

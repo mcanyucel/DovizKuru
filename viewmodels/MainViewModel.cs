@@ -20,6 +20,7 @@ namespace DovizKuru.viewmodels
         public bool AlwaysOnTop { get => m_AlwaysOnTop; set => SetProperty(ref m_AlwaysOnTop, value); }
         public bool IsSourcePageLoaded { get => m_IsSourcePageLoaded; set => SetProperty(ref m_IsSourcePageLoaded, value); }
         public bool IsAlarmHistoryOpen { get => m_IsAlarmHistoryOpen; set => SetProperty(ref m_IsAlarmHistoryOpen, value); }
+        public bool ShouldReloadPage { get => m_ShouldReloadPage; private set => SetProperty(ref m_ShouldReloadPage, value); }
         public static List<AlarmOperator> AlarmOperators { get => Enum.GetValues(typeof(AlarmOperator)).Cast<AlarmOperator>().ToList(); }
         public ExchangeRate? SelectedAlarmExchange { get => m_SelectedAlarmExchange; set => SetProperty(ref m_SelectedAlarmExchange, value); }
         public double SelectedAlarmValue { get => m_SelectedAlarmValue; set => SetProperty(ref m_SelectedAlarmValue, value); }
@@ -55,6 +56,7 @@ namespace DovizKuru.viewmodels
             m_AsyncCommands = new IAsyncRelayCommand[] { m_LoadPreferencesCommand };
 
             m_UpdateTimer = new(QueryExchangeRates, null, Timeout.Infinite, Timeout.Infinite);
+            m_ReloadTimer = new(ReloadSystem, null, Timeout.Infinite, Timeout.Infinite);
 
             var executingAssemblyName = Assembly.GetExecutingAssembly().GetName();
             m_UpdateEngine = new(executingAssemblyName.Name!, executingAssemblyName.Version!.ToString(), "https://software.mustafacanyucel.com/update");
@@ -116,7 +118,16 @@ namespace DovizKuru.viewmodels
         public void SourcePageLoaded()
         {
             IsSourcePageLoaded = true;
+            ShouldReloadPage = false;
             m_UpdateTimer.Change(5000, c_UpdateTimerPeriod);
+            m_ReloadTimer.Change(c_ReloadTimerPeriod, Timeout.Infinite);
+        }
+
+        private void ReloadSystem(object? _ = null)
+        {
+            m_UpdateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            IsSourcePageLoaded = false;
+            ShouldReloadPage = true;
         }
 
         private async Task CheckAlarms()
@@ -178,6 +189,7 @@ namespace DovizKuru.viewmodels
         private bool m_AlwaysOnTop = false;
         private bool m_ShouldQueryRates = false;
         private bool m_IsAlarmHistoryOpen = false;
+        private bool m_ShouldReloadPage = false;
         private DateTime m_LastUpdate;
         private AlarmOperator m_SelectedAlarmOperator;
         private ExchangeRate? m_SelectedAlarmExchange;
@@ -200,7 +212,9 @@ namespace DovizKuru.viewmodels
         private readonly IAsyncRelayCommand[] m_AsyncCommands;
 
         private readonly Timer m_UpdateTimer;
-        private const int c_UpdateTimerPeriod = 15000; // 15 seconds
+        private readonly Timer m_ReloadTimer;
+        private const int c_UpdateTimerPeriod = 15 * 1000; // 15 seconds
+        private const int c_ReloadTimerPeriod = 15 * 60 * 1000; // 15 minutes
 
         private ObservableCollection<Alarm> m_AlarmList = new();
         private readonly ObservableCollection<AlarmItem> m_AlarmHistory = new();
