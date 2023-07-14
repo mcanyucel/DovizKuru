@@ -140,7 +140,7 @@ namespace DovizKuru.viewmodels
                     Alarm alarm = AlarmList[i];
                     if (!alarm.IsEnabled) continue;
                     ExchangeRate? rate = ExchangeRates.FirstOrDefault(rate => rate.Code == alarm.Code);
-                    if (rate == null) continue;
+                    if (rate == null || rate.NewBuying == -1) continue;
 
                     if (alarm.AlarmOperator == AlarmOperator.GreaterThan && rate.NewBuying > alarm.Value)
                     {
